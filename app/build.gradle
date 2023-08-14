@@ -17,7 +17,7 @@ android {
         buildConfigField 'String', 'BUILD_VERSION' , '"' + "$versionName" + '-g'+ getGitVersion()+ '-' + getBuildDate()  +  '"'
 
         ndk {
-            abiFilters "arm64-v8a" // ,"armeabi-v7a"
+            abiFilters "arm64-v8a"  ,"armeabi-v7a"
         }
     }
 
