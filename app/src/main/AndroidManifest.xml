@@ -32,7 +32,6 @@
         android:name="com.osfans.trime.TrimeApplication"
         android:label="@string/trime_app_name"
         android:icon="@mipmap/ic_app_icon"
-        android:roundIcon="@mipmap/ic_app_icon_round"
         android:requestLegacyExternalStorage="true"
         android:allowBackup="true"
         android:theme="@style/PreferenceTheme">

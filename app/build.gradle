@@ -6,7 +6,7 @@ android {
     ndkVersion "24.0.8215888"
 
     defaultConfig {
-        applicationId "com.tumuyan.trime"
+        applicationId "com.jk.trime"
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 20220701

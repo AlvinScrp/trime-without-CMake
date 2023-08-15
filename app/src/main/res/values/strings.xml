@@ -20,7 +20,7 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:en:xliff:document:1.2">
     <!-- Input Method Platform Tittle  -->
-    <string name="trime_app_name">Trime·Trime</string>
+    <string name="trime_app_name">JK·Board</string>
     <!-- Preference settings -->
     <string name="settings__help_title">Help</string>
     <string name="pref_wiki">Wiki</string>
@@ -159,7 +159,7 @@
     <string name="keyboard__key_swipe_travel_title">Min travel for gesture</string>
     <string name="keyboard__hook_candidate">Click candidate</string>
     <string name="keyboard__hook_candidate_commit">Send Space when click candidate (coming soon)</string>
-    <string name="trime_app_slogan">Trimes with Your Keystrokes</string>
+    <string name="trime_app_slogan">Chinese</string>
     <string name="external_storage_access_required">Trime needs to access external storage to deploy or read schemas and config, tap OK to grant the permission.</string>
     <string name="external_storage_permission_not_available">External storage permission is not available</string>
     <string name="external_storage_permission_granted">External storage permission is granted</string>
