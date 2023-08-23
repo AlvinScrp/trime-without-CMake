@@ -1,6 +1,7 @@
 package com.osfans.trime.ime.keyboard
 
 import android.content.res.Configuration
+import com.jk.ime.JLog
 import com.osfans.trime.data.AppPrefs
 import com.osfans.trime.data.Config
 import com.osfans.trime.ime.core.Trime
@@ -20,6 +21,7 @@ class KeyboardSwitcher {
 
     /** To get current keyboard instance. **/
     val currentKeyboard: Keyboard get() = keyboards[currentId]
+
     /** To get [currentKeyboard]'s ascii mode. **/
     val asciiMode: Boolean get() = currentKeyboard.asciiMode
 
@@ -28,6 +30,7 @@ class KeyboardSwitcher {
     }
 
     fun newOrReset() {
+//        JLog.d("newOrReset", true)
         val methodName = "\t<TrimeInit>\t" + Thread.currentThread().stackTrace[2].methodName + "\t"
         Timber.d(methodName)
         val ims = Trime.getService()
@@ -35,17 +38,19 @@ class KeyboardSwitcher {
         keyboardNames = Config.get(ims).keyboardNames
         Timber.d(methodName + "land")
         val land = (
-            ims.resources.configuration.orientation
-                == Configuration.ORIENTATION_LANDSCAPE
-            )
+                ims.resources.configuration.orientation
+                        == Configuration.ORIENTATION_LANDSCAPE
+                )
         Timber.d(methodName + "getConfig")
         Config.get(ims).getKeyboardPadding(land)
         Timber.d("update KeyboardPadding: KeyboardSwitcher.init")
 
         Timber.d(methodName + "getKeyboards")
+        val start = System.currentTimeMillis();
         keyboards = Array(keyboardNames.size) { i ->
             Keyboard(ims, keyboardNames[i])
         }
+        Timber.d(methodName + "getKeyboards end cost %s", (System.currentTimeMillis() - start))
         Timber.d(methodName + "setKeyboard")
         setKeyboard(0)
         Timber.d(methodName + "finish")
@@ -65,12 +70,18 @@ class KeyboardSwitcher {
             name.contentEquals(".last_lock") -> lastLockId
             name.contentEquals(".ascii") -> {
                 val asciiKeyboard = keyboards[i].asciiKeyboard
-                if (asciiKeyboard == null || asciiKeyboard.isEmpty()) { i } else { keyboardNames.indexOf(asciiKeyboard) }
+                if (asciiKeyboard == null || asciiKeyboard.isEmpty()) {
+                    i
+                } else {
+                    keyboardNames.indexOf(asciiKeyboard)
+                }
             }
+
             else -> keyboardNames.indexOf(name)
         }
         setKeyboard(i)
     }
+
     /**
      * Switch to a certain keyboard by given [name].
      */
@@ -85,20 +96,25 @@ class KeyboardSwitcher {
             name.contentEquals(".last_lock") -> lastLockId
             name.contentEquals(".ascii") -> {
                 val asciiKeyboard = keyboards[i].asciiKeyboard
-                if (asciiKeyboard == null || asciiKeyboard.isEmpty()) { i } else { keyboardNames.indexOf(asciiKeyboard) }
+                if (asciiKeyboard == null || asciiKeyboard.isEmpty()) {
+                    i
+                } else {
+                    keyboardNames.indexOf(asciiKeyboard)
+                }
             }
+
             else -> keyboardNames.indexOf(name)
         }
 
-        if (i == 0 && keyboardNames.contains("mini")) {
-            if (AppPrefs.defaultInstance().looks.useMiniKeyboard) {
-                val realkeyboard = appContext.getResources().getConfiguration().keyboard
-                if (realkeyboard != Configuration.KEYBOARD_NOKEYS) {
-                    Timber.i("onStartInputView() configuration.keyboard=" + realkeyboard + ", keyboardType=" + i)
-                    i = keyboardNames.indexOf("mini")
-                }
-            }
-        }
+//        if (i == 0 && keyboardNames.contains("mini")) {
+//            if (AppPrefs.defaultInstance().looks.useMiniKeyboard) {
+//                val realkeyboard = appContext.getResources().getConfiguration().keyboard
+//                if (realkeyboard != Configuration.KEYBOARD_NOKEYS) {
+//                    Timber.i("onStartInputView() configuration.keyboard=" + realkeyboard + ", keyboardType=" + i)
+//                    i = keyboardNames.indexOf("mini")
+//                }
+//            }
+//        }
 
         setKeyboard(i)
     }

@@ -27,15 +27,18 @@ import android.graphics.Color;
 import android.graphics.NinePatch;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.SystemClock;
+import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.jk.ime.JLog;
 import com.osfans.trime.core.Rime;
 import com.osfans.trime.ime.enums.PositionType;
 import com.osfans.trime.ime.enums.SymbolKeyboardType;
@@ -85,7 +88,7 @@ public class Config {
 
     private Map<?, ?> mStyle, mDefaultStyle;
     private String themeName, soundPackageName, currentSound;
-    private static final String defaultName = "trime";
+//    private static final String defaultName = "trime";
     private String schema_id, colorID;
 
     private Map<?, ?> fallbackColors;
@@ -184,35 +187,35 @@ public class Config {
         String methodName =
                 "\t<TrimeInit>\t" + Thread.currentThread().getStackTrace()[2].getMethodName() + "\t";
         Timber.d(methodName);
-        boolean isExist = new File(sharedDataDir).exists();
-        boolean isOverwrite = AppVersionUtils.INSTANCE.isDifferentVersion(appPrefs);
-        String defaultFile = "trime.yaml";
-        Timber.d(methodName + "copy");
-        if (isOverwrite) {
-            copyFileOrDir("", true);
-        } else if (isExist) {
-            String path = new File("", defaultFile).getPath();
-            copyFileOrDir(path, false);
-        } else {
-            copyFileOrDir("", false);
-        }
-        Timber.d(methodName + "copy2");
-        while (!new File(sharedDataDir, defaultFile).exists()) {
-            SystemClock.sleep(100);
-            copyFileOrDir("", isOverwrite);
-        }
-        // 缺失导致获取方案列表为空
-        Timber.d(methodName + "copy default.custom.yaml");
-        final String defaultCustom = "default.custom.yaml";
-        if (!new File(sharedDataDir, defaultCustom).exists()) {
-            try {
-                new File(sharedDataDir, defaultCustom).createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        boolean isExist = new File(sharedDataDir).exists();
+//        boolean isOverwrite = AppVersionUtils.INSTANCE.isDifferentVersion(appPrefs);
+//        String defaultFile = "trime.yaml";
+//        Timber.d(methodName + "copy");
+//        if (isOverwrite) {
+//            copyFileOrDir("", true);
+//        } else if (isExist) {
+//            String path = new File("", defaultFile).getPath();
+//            copyFileOrDir(path, false);
+//        } else {
+//            copyFileOrDir("", false);
+//        }
+//        Timber.d(methodName + "copy2");
+//        while (!new File(sharedDataDir, defaultFile).exists()) {
+//            SystemClock.sleep(100);
+//            copyFileOrDir("", isOverwrite);
+//        }
+//        // 缺失导致获取方案列表为空
+//        Timber.d(methodName + "copy default.custom.yaml");
+//        final String defaultCustom = "default.custom.yaml";
+//        if (!new File(sharedDataDir, defaultCustom).exists()) {
+//            try {
+//                new File(sharedDataDir, defaultCustom).createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
         Timber.d(methodName + "Rime.get");
-        Rime.get(context, !isExist); // 覆蓋時不強制部署
+        Rime.get(context,  true); // 覆蓋時不強制部署
         Timber.d(methodName + "finish");
     }
 
@@ -373,10 +376,10 @@ public class Config {
             Timber.d("init() deploy_config_file done");
 
             Map<String, Map<String, ?>> globalThemeConfig = Rime.config_get_map(themeName, "");
-            if (globalThemeConfig == null) {
-                themeName = defaultName;
-                globalThemeConfig = Rime.config_get_map(themeName, "");
-            }
+//            if (globalThemeConfig == null) {
+//                themeName = defaultName;
+//                globalThemeConfig = Rime.config_get_map(themeName, "");
+//            }
             Timber.d("init() load_map done");
             mDefaultStyle = (Map<?, ?>) globalThemeConfig.get("style");
             fallbackColors = (Map<?, ?>) globalThemeConfig.get("fallback_colors");
@@ -396,7 +399,7 @@ public class Config {
             Timber.d("init() finins");
         } catch (Exception e) {
             e.printStackTrace();
-            setTheme(defaultName);
+//            setTheme(defaultName);
         }
     }
 
@@ -653,8 +656,18 @@ public class Config {
     }
 
     // API 2.0
+
+    /**
+     * schema.keyboard_back_color: 0xffeaeaea、图片文件名 #键盘背景
+     *
+     * @param m
+     * @param k
+     * @return
+     */
     public Drawable getDrawable(@NonNull Map<?, ?> m, String k) {
+//        Timber.d("getDrawable %s %s ", k, m.get(k));
         if (m.containsKey(k)) {
+            //o 可能是具体的颜色、图片 ，可能是 AAA（配色ios： AAA: IOSkey26.png）
             final Object o = m.get(k);
             //      Timber.d("getColorDrawable()" + k + " " + o);
             return drawableObject(o);
@@ -738,6 +751,27 @@ public class Config {
         return o;
     }
 
+    //  获取当前配色方案的key的value，或者从fallback获取值。
+    @Nullable
+    private String getColorKey(String key) {
+        final Map<?, ?> map = (Map<?, ?>) presetColorSchemes.get(colorID);
+        if (map == null) return null;
+        appPrefs.getLooks().setSelectedColor(colorID);
+        if (map.containsKey(key)) {
+            return key;
+        }
+        String nextKey = key;
+        String colorKey = null;
+        while (fallbackColors.containsKey(nextKey)) {
+            nextKey = (String) fallbackColors.get(nextKey);
+            if (map.containsKey(nextKey)) {
+                colorKey = nextKey;
+                break;
+            }
+        }
+        return colorKey;
+    }
+
     /**
      * 获取配色方案名<br>
      * 优先级：设置>color_scheme>default <br>
@@ -794,25 +828,24 @@ public class Config {
             // 这个方法可以把超出Integer.MAX_VALUE的值处理为负数int
             return o.intValue();
         }
-        return parseColor(object.toString());
-    }
 
-    private static Integer parseColor(String s) {
-        Integer color = null;
-        if (s.contains(".")) return color; // picture name
+        String s = object.toString();
         try {
-            s = s.toLowerCase(Locale.getDefault());
-            if (s.startsWith("0x")) {
-                if (s.length() == 3 || s.length() == 4)
-                    s = String.format("#%02x000000", Long.decode(s.substring(2))); // 0xAA
-                else if (s.length() < 8) s = String.format("#%06x", Long.decode(s.substring(2)));
-                else if (s.length() == 9) s = "#0" + s.substring(2);
+            if (s.startsWith("0x") || s.startsWith("0X") || s.startsWith("#")) {
+//                Integer color = colorIntCache.get(s);
+//                if (color != null) {
+//                    return color;
+//                }
+//                color = Color.parseColor(s.replace("0x", "#"));
+//                colorIntCache.put(s, color);
+//                return color;
+                return Color.parseColor(s.replace("0x", "#"));
             }
-            color = Color.parseColor(s.replace("0x", "#"));
         } catch (Exception e) {
+            e.printStackTrace();
             // Log.e(TAG, "unknown color " + s);
         }
-        return color;
+        return null;
     }
 
     public Integer getCurrentColor(String key) {
@@ -875,6 +908,7 @@ public class Config {
 
     //  返回drawable。参数可以是颜色或者图片。如果参数缺失，返回null
     private Drawable drawableObject(Object o) {
+//        Timber.d("drawableObject %s ", o);
         if (o == null) return null;
         String name = o.toString();
         Integer color = parseColor(o);
@@ -885,51 +919,80 @@ public class Config {
             }
         }
         if (color != null) {
-            final GradientDrawable gd = new GradientDrawable();
-            gd.setColor(color);
-            return gd;
+            Drawable cache = colorDrawableCache.get(color);
+            if (cache == null) {
+                final GradientDrawable gd = new GradientDrawable();
+                gd.setColor(color);
+                colorDrawableCache.put(color, gd);
+                cache = gd;
+            } else {
+//                Timber.d("drawableObject %s hint cache", o);
+            }
+            return cache;
         }
         return drawableBitmapObject(name);
     }
 
     //  返回图片的drawable。如果参数缺失、非图片，返回null
-    private Drawable drawableBitmapObject(Object o) {
-        if (o == null) return null;
-        if (o instanceof String) {
-            String name = (String) o;
-            String nameDirectory =
-                    DataManager.getDataDir("backgrounds" + File.separator + backgroundFolder);
-            File f = new File(nameDirectory, name);
+    private Drawable drawableBitmapObject(String name) {
+//        Timber.d("drawableBitmapObject %s", name);
+        if (name == null) return null;
 
-            if (!f.exists()) {
-                nameDirectory = DataManager.getDataDir("backgrounds");
-                f = new File(nameDirectory, name);
+//            String nameDirectory =
+//                    DataManager.getDataDir("backgrounds" + File.separator + backgroundFolder);
+//            File f = new File(nameDirectory, name);
+
+//            if (!f.exists()) {
+//        String nameDirectory = DataManager.getDataDir("backgrounds");
+//        File f = new File(nameDirectory, name);
+//            }
+
+//        if (!f.exists()) {
+//
+//        }
+        String filePath = null;
+        Object value = curcentColors.get(name);
+        if (value != null && value instanceof String) {
+            filePath = (String) value;
+        }
+        if (filePath == null && name.endsWith(".png")) {
+            String nameDirectory = DataManager.getDataDir("backgrounds");
+            filePath = nameDirectory + File.separator + name;
+        }
+
+        if (filePath != null && !filePath.isEmpty()) {
+            Drawable drawable = bitmapDrawableCache.get(filePath);
+            if (drawable != null) {
+                return drawable;
             }
-
-            if (!f.exists()) {
-                if (curcentColors.containsKey(name)) {
-                    o = curcentColors.get(name);
-                    if (o instanceof String) f = new File((String) o);
+            Timber.d("drawableBitmapObject %s not hint cache", filePath);
+            final Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+            if (filePath.endsWith(".9.png")) {
+                final byte[] chunk = bitmap.getNinePatchChunk();
+                // 如果 .9.png 没有经过第一步，那么 chunk 就是 null, 只能按照普通方式加载
+                if (NinePatch.isNinePatchChunk(chunk)) {
+                    drawable = new NinePatchDrawable(bitmap, chunk, new Rect(), null);
                 }
             }
-
-            if (f.exists()) {
-                name = f.getPath();
-                if (name.contains(".9.png")) {
-                    final Bitmap bitmap = BitmapFactory.decodeFile(name);
-                    final byte[] chunk = bitmap.getNinePatchChunk();
-                    // 如果 .9.png 没有经过第一步，那么 chunk 就是 null, 只能按照普通方式加载
-                    if (NinePatch.isNinePatchChunk(chunk))
-                        return new NinePatchDrawable(bitmap, chunk, new Rect(), null);
-                }
-                return Drawable.createFromPath(name);
+            if (drawable == null) {
+                drawable = new BitmapDrawable(Resources.getSystem(), bitmap);
+            }
+            if (drawable != null) {
+                bitmapDrawableCache.put(filePath, drawable);
+                return drawable;
             }
         }
         return null;
     }
 
+    /**
+     * @param key preset_color_schemes.scheme.keyboard_back_color ,
+     *            preset_color_schemes.scheme.hilited_off_key_back_color
+     * @return
+     */
     public Drawable getColorDrawable(String key) {
-        final Object o = getColorObject(key);
+        final Object o = getColorObject(key);//得到 颜色int,String，或者图片文件名
+//        Timber.d("getColorDrawable " + key + " " + o);
         return drawableObject(o);
     }
 
@@ -1067,9 +1130,23 @@ public class Config {
         return null;
     }
 
-    // 遍历当前配色方案的值、fallback的值，从而获得当前方案的全部配色Map
+    /**
+     * AAA->Color Int
+     * ABC->imageFile Path
+     */
+
     private final Map<String, Object> curcentColors = new HashMap<>();
     private String backgroundFolder;
+
+
+    /**
+     * 色值 int --> 生成的GradientDrawable
+     * 背景图片文件名 -> BitmapDrawable
+     */
+
+    private final Map<Integer, Drawable> colorDrawableCache = new HashMap<>();
+    private final static Map<String, Integer> colorIntCache = new HashMap<>();
+    private final Map<String, Drawable> bitmapDrawableCache = new HashMap<>();
 
     // 初始化当前配色 Config 2.0
     public void initCurrentColors() {
@@ -1171,36 +1248,32 @@ public class Config {
         }
         if (object instanceof Long) {
             Long o = (Long) object;
-            //      Timber.w("getColorRealValue() Long, %d ; 0X%s", o, data2hex(object));
             return o.intValue();
         }
         String s = object.toString();
-        if (!s.matches(".*[.\\\\/].*")) {
-            try {
-                s = s.toLowerCase(Locale.getDefault());
-                if (s.startsWith("0x")) {
-                    if (s.length() == 3 || s.length() == 4)
-                        s = String.format("#%02x000000", Long.decode(s.substring(2))); // 0xAA
-                    else if (s.length() < 8) s = String.format("#%06x", Long.decode(s.substring(2)));
-                    else if (s.length() == 9) s = "#0" + s.substring(2);
-                }
-                if (s.matches("(0x|#)?[a-f0-9]+")) return Color.parseColor(s.replace("0x", "#"));
-            } catch (Exception e) {
-                Timber.e("getColorRealValue() unknown color, %s ; object %s", s, object);
-                e.printStackTrace();
+//        if (!s.matches(".*[.\\\\/].*")) {
+        try {
+            if (s.startsWith("0x") || s.startsWith("0X") || s.startsWith("#")) {
+                return Color.parseColor(s.replace("0x", "#"));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        }
+        if (s.endsWith(".png")) {
+            return DataManager.getDataDir("backgrounds") + File.separator + s;
         }
 
-        String nameDirectory =
-                DataManager.getDataDir("backgrounds" + File.separator + backgroundFolder);
-        File f = new File(nameDirectory, s);
+//        String nameDirectory =
+//                DataManager.getDataDir("backgrounds" + File.separator + backgroundFolder);
+//        File f = new File(nameDirectory, s);
 
-        if (!f.exists()) {
-            nameDirectory = DataManager.getDataDir("backgrounds");
-            f = new File(nameDirectory, s);
-        }
+//        if (!f.exists()) {
+//            nameDirectory = DataManager.getDataDir("backgrounds");
+//            f = new File(nameDirectory, s);
+//        }
 
-        if (f.exists()) return f.getPath();
+//        if (f.exists()) return f.getPath();
         return null;
     }
 

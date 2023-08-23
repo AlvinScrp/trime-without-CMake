@@ -251,8 +251,8 @@ class TextInputManager private constructor() :
     fun onOptionChanged(option: String, value: Boolean) {
         when (option) {
             "ascii_mode" -> {
-                trime.inputFeedbackManager.ttsLanguage =
-                    locales[if (value) 1 else 0]
+//                trime.inputFeedbackManager.ttsLanguage =
+//                    locales[if (value) 1 else 0]
             }
             "_hide_comment" -> trime.setShowComment(!value)
             "_hide_candidate" -> {
@@ -286,11 +286,11 @@ class TextInputManager private constructor() :
     }
 
     override fun onPress(keyEventCode: Int) {
-        trime.inputFeedbackManager?.let {
-            it.keyPressVibrate()
-            it.keyPressSound(keyEventCode)
-            it.keyPressSpeak(keyEventCode)
-        }
+//        trime.inputFeedbackManager?.let {
+//            it.keyPressVibrate()
+//            it.keyPressSound(keyEventCode)
+//            it.keyPressSpeak(keyEventCode)
+//        }
     }
 
     override fun onRelease(keyEventCode: Int) {

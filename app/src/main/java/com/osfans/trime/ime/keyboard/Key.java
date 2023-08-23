@@ -117,7 +117,7 @@ public class Key {
       boolean hasComposingKey = false;
 
       for (int i = 0; i < EVENT_NUM - 1; i++) {
-        String eventType = (KeyEventType.Companion.valueOf(i)).toString().toLowerCase(Locale.ROOT);
+        String eventType = (KeyEventType.Companion.valueOf(i)).getLower();
         s = ConfigGetter.getString(mk, eventType, "");
         if (!TextUtils.isEmpty(s)) {
           events[i] = new Event(mKeyboard, s);

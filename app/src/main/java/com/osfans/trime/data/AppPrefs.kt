@@ -20,10 +20,11 @@ import java.lang.ref.WeakReference
 class AppPrefs(
     context: Context
 ) {
-    var shared: SharedPreferences = if (!UserManagerCompat.isUserUnlocked(context) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        context.createDeviceProtectedStorageContext().getSharedPreferences("shared_psfs", Context.MODE_PRIVATE)
-    else
-        PreferenceManager.getDefaultSharedPreferences(context)
+    var shared: SharedPreferences =
+        if (!UserManagerCompat.isUserUnlocked(context) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            context.createDeviceProtectedStorageContext().getSharedPreferences("shared_psfs", Context.MODE_PRIVATE)
+        else
+            PreferenceManager.getDefaultSharedPreferences(context)
 
     private val applicationContext: WeakReference<Context> = WeakReference(context.applicationContext)
 
@@ -47,12 +48,15 @@ class AppPrefs(
             false is T -> {
                 (cacheBoolean[key] ?: getPrefInternal(key, default)) as T
             }
+
             0 is T -> {
                 (cacheInt[key] ?: getPrefInternal(key, default)) as T
             }
+
             "" is T -> {
                 (cacheString[key] ?: getPrefInternal(key, default)) as T
             }
+
             else -> null as T
         }
     }
@@ -69,16 +73,19 @@ class AppPrefs(
                 cacheBoolean[key] = value
                 value as T
             }
+
             0 is T -> {
                 val value = shared.getInt(key, default as Int)
                 cacheInt[key] = value
                 value as T
             }
+
             "" is T -> {
                 val value = shared.getString(key, default as String) ?: (default as String)
                 cacheString[key] = value
                 value as T
             }
+
             else -> null as T
         }
     }
@@ -93,10 +100,12 @@ class AppPrefs(
                 shared.edit().putBoolean(key, value as Boolean).apply()
                 cacheBoolean[key] = value as Boolean
             }
+
             0 is T -> {
                 shared.edit().putInt(key, value as Int).apply()
                 cacheInt[key] = value as Int
             }
+
             "" is T -> {
                 shared.edit().putString(key, value as String).apply()
                 cacheString[key] = value as String
@@ -157,6 +166,7 @@ class AppPrefs(
             const val LAST_VERSION_NAME = "general__last_version_name"
             const val PID = "general__pid"
         }
+
         var lastVersionName: String
             get() = prefs.getPref(LAST_VERSION_NAME, "")
             set(v) = prefs.setPref(LAST_VERSION_NAME, v)
@@ -209,6 +219,7 @@ class AppPrefs(
             const val DELETE_CANDIDATE_TIMEOUT = "keyboard__key_delete_candidate_timeout"
             const val SHOULD_LONG_CLICK_DELETE_CANDIDATE = "keyboard__long_click_delete_candidate"
         }
+
         var inlinePreedit: InlineModeType
             get() = InlineModeType.fromString(prefs.getPref(INLINE_PREEDIT_MODE, "preview"))
             set(v) = prefs.setPref(INLINE_PREEDIT_MODE, v)
@@ -322,12 +333,18 @@ class AppPrefs(
             const val AUTO_DARK = "looks__auto_dark"
             const val USE_MINI_KEYBOARD = "looks__use_mini_keyboard"
         }
+
         var selectedTheme: String
-            get() = prefs.getPref(SELECTED_THEME, "trime")
-            set(v) = prefs.setPref(SELECTED_THEME, v)
+            // get() = prefs.getPref(SELECTED_THEME, "trime")
+            //set(v) = prefs.setPref(SELECTED_THEME, v)
+            get() = "jk.trime"
+            set(v) {}
         var selectedColor: String
-            get() = prefs.getPref(SELECTED_COLOR, "default")
-            set(v) = prefs.setPref(SELECTED_COLOR, v)
+            get() = "default"
+            set(v) {}
+
+        //            get() = prefs.getPref(SELECTED_COLOR, "default")
+//            set(v) = prefs.setPref(SELECTED_COLOR, v)
         var autoDark: Boolean = false
             get() = prefs.getPref(AUTO_DARK, false)
             private set
@@ -348,14 +365,17 @@ class AppPrefs(
             const val LAST_BACKGROUND_SYNC = "conf__last_background_sync"
             val EXTERNAL_PATH_PREFIX: String = appContext.getExternalFilesDir(null)!!.absolutePath
         }
+
         var sharedDataDir: String
             get() = prefs.getPref(SHARED_DATA_DIR, "$EXTERNAL_PATH_PREFIX/rime-share")
-            set(v) = prefs.setPref(SHARED_DATA_DIR, v)
+            //            get() = "$EXTERNAL_PATH_PREFIX/rime-share"
+            set(v) {
+                prefs.setPref(SHARED_DATA_DIR, v)
+            }
         var userDataDir: String
             get() = prefs.getPref(USER_DATA_DIR, "$EXTERNAL_PATH_PREFIX/rime-user")
-            set(v)  {
-                ToastUtils.showLong("sdsdsdsd")
-                Log.d("alvin",Log.getStackTraceString(NullPointerException("set userDataDir:${v}")))
+            //            get() = "$EXTERNAL_PATH_PREFIX/rime-user"
+            set(v) {
                 prefs.setPref(USER_DATA_DIR, v)
             }
         var syncBackgroundEnabled: Boolean
@@ -384,6 +404,7 @@ class AppPrefs(
             const val DRAFT_LIMIT = "other__draft_limit"
             const val CLIPBOARD_LIMIT = "other__clipboard_limit"
         }
+
         var uiMode: String
             get() = prefs.getPref(UI_MODE, "auto")
             set(v) = prefs.setPref(UI_MODE, v)

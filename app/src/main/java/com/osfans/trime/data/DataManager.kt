@@ -7,10 +7,7 @@ object DataManager {
 
     @JvmStatic
     fun getDataDir(child: String = ""): String {
-        return if (File(prefs.conf.sharedDataDir, child).exists()) {
-            File(prefs.conf.sharedDataDir, child).absolutePath
-        } else {
-            File(prefs.conf.userDataDir, child).absolutePath
-        }
+        return "${prefs.conf.userDataDir}${File.separator}${child}"
+//        return  File(prefs.conf.userDataDir, child).absolutePath
     }
 }
