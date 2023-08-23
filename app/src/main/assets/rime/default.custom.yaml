@@ -1,0 +1,10 @@
+customization:
+  distribution_code_name: ""
+  distribution_version: ""
+  generator: "Rime::SwitcherSettings"
+  modified_time: "Fri Dec 10 18:30:28 2021"
+  rime_version: 1.7.3
+patch:
+  schema_list:
+    - {schema: clover}
+    - {schema: clover_jiugong}

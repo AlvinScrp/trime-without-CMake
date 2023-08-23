@@ -1,0 +1,137 @@
+# Rime schema
+# encoding: utf-8
+
+schema:
+  schema_id: clover
+  name: 中文26键
+  version: "1.1.0"
+  author:
+    - clover
+  description: |
+    由clover定制，特点：
+      1. 结合搜狗输入法的输入习惯
+      2. 默认开启 emoji 表情支持
+      3. 加上很多特殊符号的输入支持
+      4. 繁简切换支持
+      5. 许多智能纠错
+    由SivanLaai补充：
+      1. 支持符号输入
+      2. 支持笔画反查
+  dependencies:
+    - emoji
+    - stroke
+
+
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+  translators:
+    - punct_translator
+    - table_translator@custom_phrase
+    - reverse_lookup_translator
+    - script_translator
+  filters:
+    - simplifier@emoji_suggestion
+    - simplifier@symbol_support
+    - simplifier
+    - uniquifier
+
+simplifier:
+  option_name: zh_simp_s2t
+  opencc_config: s2t.json
+
+emoji_suggestion:
+  opencc_config: emoji.json
+  option_name: emoji_suggestion
+  tips: all
+
+symbol_support:
+  opencc_config: symbol.json
+  option_name: symbol_support
+  tips: all
+
+speller:
+  alphabet: zyxwvutsrqponmlkjihgfedcba
+  delimiter: " '"
+  algebra:
+    # 基础
+    - abbrev/^([a-z]).+$/$1/
+    - abbrev/^([zcs]h).+$/$1/
+
+    # 补全
+    - derive/([dtngkhrzcs])o(u|ng)$/$1o/   # o = ou; o = ong
+    - derive/ong$/on/      # on = ong
+    - derive/^ding$/din/     # din = ding
+
+    # 处理 v 和 u
+    - derive/^([nl])ue$/$1ve/   # nve = nue; lve = lue
+    - derive/^([jqxy])u/$1v/    # v = u; v = u
+
+    # 智能纠错
+    - derive/ao$/oa/       # oa = ao
+    - derive/([iu])a(o|ng?)$/a$1$2/   # aio = iao; aing = iang; aung = uang
+    - derive/([aeiou])ng$/$1gn/   # gn = ng
+    - derive/un$/uen/    # uen = un
+    - derive/ui$/uei/    # uei = ui
+    - derive/iu$/iou/    # iou = ui
+    - derive/tie$/tei/    # tei = tie
+    - derive/eng$/ebg/    # ebg = eng
+    - derive/i$/ii/      # ii = i  # i 不小心按两下
+    - derive/u$/uu/      # ui = u  # u 不小心按两下
+
+translator:
+  dictionary: clover
+  always_show_comments: true
+  enable_correction: true
+  spelling_hints: 16 # ～字以内候选标註完整带调拼音
+  enable_completion: true
+  enable_sentence: true
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+
+custom_phrase:
+  dictionary: ""
+  user_dict: custom_phrase
+  db_class: stabledb
+  enable_completion: true
+  enable_sentence: true
+  initial_quality: 1
+
+reverse_lookup:
+  dictionary: stroke
+  enable_completion: true
+  prefix: "`"
+  suffix: "'"
+  tips: 〔筆畫〕
+  preedit_format:
+    - xlit/hspnz/一丨丿丶乙/
+  comment_format:
+    - xform/([nl])v/$1ü/
+
+punctuator:
+  import_preset: symbols
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    punct: '^/([0-9]0?|[A-Za-z]+)$'
+    reverse_lookup: "`[a-z]*'?$"

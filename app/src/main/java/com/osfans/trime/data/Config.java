@@ -88,7 +88,7 @@ public class Config {
 
     private Map<?, ?> mStyle, mDefaultStyle;
     private String themeName, soundPackageName, currentSound;
-//    private static final String defaultName = "trime";
+    //    private static final String defaultName = "trime";
     private String schema_id, colorID;
 
     private Map<?, ?> fallbackColors;
@@ -115,10 +115,6 @@ public class Config {
 
         Timber.d(methodName + "prepareRime");
         prepareRime(context);
-
-        //    正常逻辑不应该部署全部主题，init()方法已经做过当前主题的部署
-        //    Timber.d(methodName + "deployTheme");
-        //    deployTheme();
 
         Timber.d(methodName + "init");
         init(true);
@@ -187,37 +183,13 @@ public class Config {
         String methodName =
                 "\t<TrimeInit>\t" + Thread.currentThread().getStackTrace()[2].getMethodName() + "\t";
         Timber.d(methodName);
-//        boolean isExist = new File(sharedDataDir).exists();
-//        boolean isOverwrite = AppVersionUtils.INSTANCE.isDifferentVersion(appPrefs);
-//        String defaultFile = "trime.yaml";
-//        Timber.d(methodName + "copy");
-//        if (isOverwrite) {
-//            copyFileOrDir("", true);
-//        } else if (isExist) {
-//            String path = new File("", defaultFile).getPath();
-//            copyFileOrDir(path, false);
-//        } else {
-//            copyFileOrDir("", false);
-//        }
-//        Timber.d(methodName + "copy2");
-//        while (!new File(sharedDataDir, defaultFile).exists()) {
-//            SystemClock.sleep(100);
-//            copyFileOrDir("", isOverwrite);
-//        }
-//        // 缺失导致获取方案列表为空
-//        Timber.d(methodName + "copy default.custom.yaml");
-//        final String defaultCustom = "default.custom.yaml";
-//        if (!new File(sharedDataDir, defaultCustom).exists()) {
-//            try {
-//                new File(sharedDataDir, defaultCustom).createNewFile();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        Timber.d(methodName+" copyAssets");
+        copyAssets();
         Timber.d(methodName + "Rime.get");
-        Rime.get(context,  true); // 覆蓋時不強制部署
+        Rime.get(context, true); // 覆蓋時不強制部署
         Timber.d(methodName + "finish");
     }
+
 
     public static String[] getThemeKeys(boolean isUser) {
         File d = new File(isUser ? userDataDir : sharedDataDir);
@@ -247,16 +219,20 @@ public class Config {
         return names;
     }
 
+    private boolean copyAssets() {
+        return copyFileOrDir("", false);
+    }
+
     public boolean copyFileOrDir(String path, boolean overwrite) {
         try {
             final String assetPath = new File(RIME, path).getPath();
             final String[] assets = assetManager.list(assetPath);
             if (assets.length == 0) {
-                // Files
+                // File
                 copyFile(path, overwrite);
             } else {
                 // Dirs
-                final File dir = new File(sharedDataDir, path);
+                final File dir = new File(userDataDir, path);
                 if (!dir.exists()) // noinspection ResultOfMethodCallIgnored
                     dir.mkdir();
                 for (String asset : assets) {
@@ -274,7 +250,7 @@ public class Config {
     private void copyFile(String fileName, boolean overwrite) {
         if (fileName == null) return;
 
-        final String targetFileName = new File(sharedDataDir, fileName).getPath();
+        final String targetFileName = new File(userDataDir, fileName).getPath();
         if (new File(targetFileName).exists() && !overwrite) return;
         final String sourceFileName = new File(RIME, fileName).getPath();
         try (InputStream in = assetManager.open(sourceFileName);

@@ -367,16 +367,16 @@ class AppPrefs(
         }
 
         var sharedDataDir: String
-            get() = prefs.getPref(SHARED_DATA_DIR, "$EXTERNAL_PATH_PREFIX/rime-share")
-            //            get() = "$EXTERNAL_PATH_PREFIX/rime-share"
+//            get() = prefs.getPref(SHARED_DATA_DIR, "$EXTERNAL_PATH_PREFIX/rime-jk-share")
+                        get() = "$EXTERNAL_PATH_PREFIX/rime-jk-share"
             set(v) {
-                prefs.setPref(SHARED_DATA_DIR, v)
+//                prefs.setPref(SHARED_DATA_DIR, v)
             }
         var userDataDir: String
-            get() = prefs.getPref(USER_DATA_DIR, "$EXTERNAL_PATH_PREFIX/rime-user")
-            //            get() = "$EXTERNAL_PATH_PREFIX/rime-user"
+//            get() = prefs.getPref(USER_DATA_DIR, "$EXTERNAL_PATH_PREFIX/rime-jk-user")
+                        get() = "$EXTERNAL_PATH_PREFIX/rime-jk-user"
             set(v) {
-                prefs.setPref(USER_DATA_DIR, v)
+//                prefs.setPref(USER_DATA_DIR, v)
             }
         var syncBackgroundEnabled: Boolean
             get() = prefs.getPref(SYNC_BACKGROUND_ENABLED, false)
