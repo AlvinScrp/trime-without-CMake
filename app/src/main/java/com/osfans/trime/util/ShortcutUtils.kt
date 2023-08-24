@@ -18,7 +18,6 @@ import com.blankj.utilcode.util.IntentUtils
 import com.osfans.trime.core.Rime
 import com.osfans.trime.data.AppPrefs
 import com.osfans.trime.ime.core.Trime
-import com.osfans.trime.settings.LogActivity
 import timber.log.Timber
 import java.text.FieldPosition
 import java.text.SimpleDateFormat
@@ -36,7 +35,7 @@ object ShortcutUtils {
             "date" -> return getDate(option)
             "run" -> startIntent(option)
             "share_text" -> Trime.getService().shareText()
-            "liquid_keyboard" -> Trime.getService().selectLiquidKeyboard(option)
+//            "liquid_keyboard" -> Trime.getService().selectLiquidKeyboard(option)
             else -> startIntent(command, option)
         }
         return null
@@ -121,11 +120,11 @@ object ShortcutUtils {
         return clipItem?.coerceToText(context)
     }
 
-    fun syncInBackground(context: Context) {
-        val prefs = AppPrefs.defaultInstance()
-        prefs.conf.lastBackgroundSync = Date().time
-        prefs.conf.lastSyncStatus = Rime.syncUserData(context)
-    }
+//    fun syncInBackground(context: Context) {
+//        val prefs = AppPrefs.defaultInstance()
+//        prefs.conf.lastBackgroundSync = Date().time
+//        prefs.conf.lastSyncStatus = Rime.syncUserData(context)
+//    }
 
     fun openCategory(keyCode: Int): Boolean {
         val category = applicationLaunchKeyCategories[keyCode]
@@ -148,8 +147,8 @@ object ShortcutUtils {
     }
 
     fun launchLogActivity(context: Context) {
-        context.startActivity(
-            Intent(context, LogActivity::class.java)
-        )
+//        context.startActivity(
+//            Intent(context, LogActivity::class.java)
+//        )
     }
 }

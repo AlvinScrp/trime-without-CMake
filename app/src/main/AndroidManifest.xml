@@ -72,16 +72,10 @@
             </intent-filter>
         </activity-alias>
 
-        <activity android:name=".settings.AboutActivity"
-            android:label="@string/settings__about_title" />
 
         <activity
             android:name=".setup.SetupActivity"
             android:exported="false" />
-        <activity
-            android:name=".settings.LogActivity"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:parentActivityName=".settings.PrefMainActivity" />
+
     </application>
 </manifest>

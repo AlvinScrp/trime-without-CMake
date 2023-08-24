@@ -31,34 +31,24 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.NinePatchDrawable;
-import android.os.SystemClock;
-import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.jk.ime.JLog;
 import com.osfans.trime.core.Rime;
 import com.osfans.trime.ime.enums.PositionType;
-import com.osfans.trime.ime.enums.SymbolKeyboardType;
 import com.osfans.trime.ime.keyboard.Key;
-import com.osfans.trime.ime.keyboard.Sound;
-import com.osfans.trime.ime.symbol.TabManager;
-import com.osfans.trime.util.AppVersionUtils;
 import com.osfans.trime.util.ConfigGetter;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -87,7 +77,7 @@ public class Config {
     }
 
     private Map<?, ?> mStyle, mDefaultStyle;
-    private String themeName, soundPackageName, currentSound;
+    private String themeName;
     //    private static final String defaultName = "trime";
     private String schema_id, colorID;
 
@@ -111,7 +101,6 @@ public class Config {
         self = this;
         assetManager = context.getAssets();
         themeName = appPrefs.getLooks().getSelectedTheme();
-        soundPackageName = appPrefs.getKeyboard().getSoundPackage();
 
         Timber.d(methodName + "prepareRime");
         prepareRime(context);
@@ -119,8 +108,6 @@ public class Config {
         Timber.d(methodName + "init");
         init(true);
 
-        Timber.d(methodName + "setSoundFromColor");
-        setSoundFromColor();
 
         Timber.d(methodName + "setClipboard&draft");
         clipBoardCompare = appPrefs.getOther().getClipboardCompareRules().trim().split("\n");
@@ -150,35 +137,6 @@ public class Config {
         return Integer.parseInt(appPrefs.getOther().getDraftLimit());
     }
 
-    public void setClipBoardCompare(String str) {
-        String s = pattern.matcher(str).replaceAll("\n").trim();
-        clipBoardCompare = s.split("\n");
-
-        appPrefs.getOther().setClipboardCompareRules(s);
-    }
-
-    public void setClipBoardOutput(String str) {
-        String s = pattern.matcher(str).replaceAll("\n").trim();
-        clipBoardOutput = s.split("\n");
-
-        appPrefs.getOther().setClipboardOutputRules(s);
-    }
-
-    public void setDraftOutput(String str) {
-        String s = pattern.matcher(str).replaceAll("\n").trim();
-        draftOutput = s.split("\n");
-
-        appPrefs.getOther().setDraftOutputRules(s);
-    }
-
-    public String getTheme() {
-        return themeName;
-    }
-
-    public String getSoundPackage() {
-        return soundPackageName;
-    }
-
     public void prepareRime(Context context) {
         String methodName =
                 "\t<TrimeInit>\t" + Thread.currentThread().getStackTrace()[2].getMethodName() + "\t";
@@ -188,35 +146,6 @@ public class Config {
         Timber.d(methodName + "Rime.get");
         Rime.get(context, true); // 覆蓋時不強制部署
         Timber.d(methodName + "finish");
-    }
-
-
-    public static String[] getThemeKeys(boolean isUser) {
-        File d = new File(isUser ? userDataDir : sharedDataDir);
-        FilenameFilter trimeFilter = (dir, filename) -> filename.endsWith("trime.yaml");
-        String[] list = d.list(trimeFilter);
-        if (list != null) return list;
-        return new String[]{};
-    }
-
-    public static String[] getSoundPackages() {
-        File d = new File(userDataDir, "sound");
-        FilenameFilter trimeFilter = (dir, filename) -> filename.endsWith(".sound.yaml");
-        String[] list = d.list(trimeFilter);
-        if (list != null) return list;
-        return new String[]{};
-    }
-
-    public static String[] getYamlFileNames(String[] keys) {
-        if (keys == null) return null;
-        final int n = keys.length;
-        final String[] names = new String[n];
-        for (int i = 0; i < keys.length; i++) {
-            final String k =
-                    keys[i].replace(".trime.yaml", "").replace(".sound.yaml", "").replace(".yaml", "");
-            names[i] = k;
-        }
-        return names;
     }
 
     private boolean copyAssets() {
@@ -266,75 +195,6 @@ public class Config {
         }
     }
 
-    private void deployTheme() {
-        if (userDataDir.contentEquals(sharedDataDir)) return; // 相同文件夾不部署主題
-        final String[] configs = getThemeKeys(false);
-        for (String config : configs) Rime.deploy_config_file(config, "config_version");
-    }
-
-    public void setTheme(String theme) {
-        themeName = theme;
-        appPrefs.getLooks().setSelectedTheme(themeName);
-        init(false);
-    }
-
-    // 设置音效包
-    public void setSoundPackage(String name) {
-        soundPackageName = name;
-        String path = userDataDir + File.separator + "sound" + File.separator + name + ".sound.yaml";
-        File file = new File(path);
-        if (file.exists()) {
-            applySoundPackage(file, name);
-        }
-        appPrefs.getKeyboard().setSoundPackage(soundPackageName);
-    }
-
-    // 应用音效包
-    private void applySoundPackage(File file, String name) {
-        // copy soundpackage yaml file from sound folder to build folder
-        try {
-            InputStream in = new FileInputStream(file);
-            OutputStream out =
-                    new FileOutputStream(
-                            userDataDir + File.separator + "build" + File.separator + name + ".sound.yaml");
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
-            }
-            in.close();
-            out.close();
-            Timber.i("applySoundPackage = " + name);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Sound.get(name);
-        currentSound = name;
-    }
-
-    // 配色指定音效时自动切换音效效果（不会自动修改设置）。
-    public void setSoundFromColor() {
-        final Map<String, ?> m = (Map<String, ?>) presetColorSchemes.get(colorID);
-        assert m != null;
-        if (m.containsKey("sound")) {
-            String sound = (String) m.get("sound");
-            if (!Objects.equals(sound, currentSound)) {
-                String path =
-                        userDataDir + File.separator + "sound" + File.separator + sound + ".sound.yaml";
-                File file = new File(path);
-                if (file.exists()) {
-                    applySoundPackage(file, sound);
-                    return;
-                }
-            }
-        }
-
-        if (!Objects.equals(currentSound, soundPackageName)) {
-            setSoundPackage(soundPackageName);
-        }
-    }
-
     private void init(boolean skip_delopy) {
         Timber.d("init() themeName=%s schema_id=%s", themeName, schema_id);
         try {
@@ -364,8 +224,8 @@ public class Config {
                     (Map<String, Map<String, String>>) globalThemeConfig.get("preset_color_schemes");
             presetKeyboards = (Map<String, Map<String, ?>>) globalThemeConfig.get("preset_keyboards");
             liquidKeyboard = globalThemeConfig.get("liquid_keyboard");
-            initLiquidKeyboard();
-            Timber.d("init() initLiquidKeyboard done");
+//            initLiquidKeyboard();
+//            Timber.d("init() initLiquidKeyboard done");
             Rime.setShowSwitches(appPrefs.getKeyboard().getSwitchesEnabled());
             Rime.setShowSwitchArrow(appPrefs.getKeyboard().getSwitchArrowEnabled());
             reset();
@@ -481,31 +341,31 @@ public class Config {
         return keyboards;
     }
 
-    public void initLiquidKeyboard() {
-        TabManager.clear();
-        if (liquidKeyboard == null) return;
-        Timber.d("initLiquidKeyboard()");
-        final List<?> names = (List<?>) liquidKeyboard.get("keyboards");
-        if (names == null) return;
-        for (Object s : names) {
-            String name = (String) s;
-            if (liquidKeyboard.containsKey(name)) {
-                Map<?, ?> keyboard = (Map<?, ?>) liquidKeyboard.get(name);
-                if (keyboard != null) {
-                    if (keyboard.containsKey("name")) {
-                        name = (String) keyboard.get("name");
-                    }
-                    if (keyboard.containsKey("type")) {
-                        TabManager.get()
-                                .addTab(
-                                        name,
-                                        SymbolKeyboardType.Companion.fromObject(keyboard.get("type")),
-                                        keyboard.get("keys"));
-                    }
-                }
-            }
-        }
-    }
+//    public void initLiquidKeyboard() {
+//        TabManager.clear();
+//        if (liquidKeyboard == null) return;
+//        Timber.d("initLiquidKeyboard()");
+//        final List<?> names = (List<?>) liquidKeyboard.get("keyboards");
+//        if (names == null) return;
+//        for (Object s : names) {
+//            String name = (String) s;
+//            if (liquidKeyboard.containsKey(name)) {
+//                Map<?, ?> keyboard = (Map<?, ?>) liquidKeyboard.get(name);
+//                if (keyboard != null) {
+//                    if (keyboard.containsKey("name")) {
+//                        name = (String) keyboard.get("name");
+//                    }
+//                    if (keyboard.containsKey("type")) {
+//                        TabManager.get()
+//                                .addTab(
+//                                        name,
+//                                        SymbolKeyboardType.Companion.fromObject(keyboard.get("type")),
+//                                        keyboard.get("keys"));
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public Map<String, ?> getKeyboard(String name) {
         if (!presetKeyboards.containsKey(name)) name = "default";
@@ -717,7 +577,6 @@ public class Config {
     private Object getColorObject(String key) {
         final Map<?, ?> map = (Map<?, ?>) presetColorSchemes.get(colorID);
         if (map == null) return null;
-        appPrefs.getLooks().setSelectedColor(colorID);
         Object o = map.get(key);
         String fallbackKey = key;
         while (o == null && fallbackColors.containsKey(fallbackKey)) {
@@ -727,26 +586,7 @@ public class Config {
         return o;
     }
 
-    //  获取当前配色方案的key的value，或者从fallback获取值。
-    @Nullable
-    private String getColorKey(String key) {
-        final Map<?, ?> map = (Map<?, ?>) presetColorSchemes.get(colorID);
-        if (map == null) return null;
-        appPrefs.getLooks().setSelectedColor(colorID);
-        if (map.containsKey(key)) {
-            return key;
-        }
-        String nextKey = key;
-        String colorKey = null;
-        while (fallbackColors.containsKey(nextKey)) {
-            nextKey = (String) fallbackColors.get(nextKey);
-            if (map.containsKey(nextKey)) {
-                colorKey = nextKey;
-                break;
-            }
-        }
-        return colorKey;
-    }
+
 
     /**
      * 获取配色方案名<br>
@@ -1136,53 +976,7 @@ public class Config {
             Timber.i("no colorID %s", colorID);
             return;
         }
-        appPrefs.getLooks().setSelectedColor(colorID);
-
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            Object value = getColorRealValue(entry.getValue());
-            if (value != null) curcentColors.put(entry.getKey().toString(), value);
-        }
-
-        for (Map.Entry<?, ?> entry : fallbackColors.entrySet()) {
-            String key = entry.getKey().toString();
-            if (!curcentColors.containsKey(key)) {
-                Object o = map.get(key);
-                String fallbackKey = key;
-                List<String> fallbackKeys = new ArrayList<>();
-                while (o == null && fallbackColors.containsKey(fallbackKey)) {
-                    fallbackKey = (String) fallbackColors.get(fallbackKey);
-                    o = map.get(fallbackKey);
-                    fallbackKeys.add(fallbackKey);
-                    // 避免死循环
-                    if (fallbackKeys.size() > 40) break;
-                }
-                if (o != null) {
-                    Object value = getColorRealValue(o);
-                    if (value != null) {
-                        curcentColors.put(key, value);
-                        for (String k : fallbackKeys) {
-                            curcentColors.put(k, value);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // 当切换暗黑模式时，刷新键盘配色方案
-    public void initCurrentColors(boolean darkMode) {
-        curcentColors.clear();
-        colorID = getColorSchemeName(darkMode);
-        backgroundFolder = getString("background_folder");
-        Timber.d(
-                "initCurrentColors() colorID=%s themeName=%s schema_id=%s darkMode=%s",
-                colorID, themeName, schema_id, darkMode);
-        final Map<?, ?> map = (Map<?, ?>) presetColorSchemes.get(colorID);
-        if (map == null) {
-            Timber.i("no colorID %s", colorID);
-            return;
-        }
-        appPrefs.getLooks().setSelectedColor(colorID);
+//        appPrefs.getLooks().setSelectedColor(colorID);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             Object value = getColorRealValue(entry.getValue());

@@ -32,7 +32,7 @@ object JK {
     fun init(binding: MainInputLayoutBinding) {
         this.candidateBarView = binding.candidateView.candidateBarView
         this.tabBarView = binding.tabBarView
-        binding.candidateView.candidateDown.setOnClickListener { expandCandidate(listOf("a", "b", "c")) }
+        binding.candidateView.candidateDown.setOnClickListener { expandCandidate() }
         initTabBar(binding)
         initBody(binding)
         updateJKUI(false, JKViewKey.KeyBoard)
@@ -96,7 +96,7 @@ object JK {
 
     }
 
-    private  fun expandCandidate(candidates: List<String>) {
+    private  fun expandCandidate() {
         hasCandidate = true
         candidateExpanded = true
         updateJKUI(hasCandidate, JKViewKey.CandidateExpand)

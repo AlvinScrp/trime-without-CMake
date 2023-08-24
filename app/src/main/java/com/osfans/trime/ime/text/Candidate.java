@@ -48,15 +48,15 @@ public class Candidate extends View {
   public interface EventListener {
     void onCandidatePressed(int index);
 
-    void onCandidateSymbolPressed(String arrow);
+//    void onCandidateSymbolPressed(String arrow);
 
-    void onCandidateLongClicked(int index);
+//    void onCandidateLongClicked(int index);
   }
 
   private static final int MAX_CANDIDATE_COUNT = 30;
-  public static final String PAGE_UP_BUTTON = "◀";
-  public static final String PAGE_DOWN_BUTTON = "▶";
-  public static final String PAGE_EX_BUTTON = "▼";
+//  public static final String PAGE_UP_BUTTON = "◀";
+//  public static final String PAGE_DOWN_BUTTON = "▶";
+//  public static final String PAGE_EX_BUTTON = "▼";
   private int expectWidth = 0;
 
   private WeakReference<EventListener> listener = new WeakReference<>(null);
@@ -140,9 +140,9 @@ public class Candidate extends View {
     setWillNotDraw(false);
   }
 
-  public static int getMaxCandidateCount() {
-    return MAX_CANDIDATE_COUNT;
-  }
+//  public static int getMaxCandidateCount() {
+//    return MAX_CANDIDATE_COUNT;
+//  }
 
   public void setCandidateListener(@Nullable EventListener listener) {
     this.listener = new WeakReference<>(listener);
@@ -173,26 +173,26 @@ public class Candidate extends View {
    * @return 是否成功選字
    */
   private void onCandidateClick(int index, boolean isLongClick) {
-    ComputedCandidate candidate = null;
+//    ComputedCandidate candidate = null;
     if (index >= 0 && index < computedCandidates.size()) {
-      candidate = computedCandidates.get(index);
-      if (candidate != null) {
-        if (candidate instanceof ComputedCandidate.Word) {
-          if (listener.get() != null) {
-            if (isLongClick && Config.getShouldLongClickDeleteCandidate()) {
-              listener.get().onCandidateLongClicked(index + startNum);
-            } else {
+//      candidate = computedCandidates.get(index);
+//      if (candidate != null) {
+//        if (candidate instanceof ComputedCandidate.Word) {
+//          if (listener.get() != null) {
+//            if (isLongClick && Config.getShouldLongClickDeleteCandidate()) {
+//              listener.get().onCandidateLongClicked(index + startNum);
+//            } else {
               listener.get().onCandidatePressed(index + startNum);
-            }
-          }
-        }
-        if (candidate instanceof ComputedCandidate.Symbol) {
-          String arrow = ((ComputedCandidate.Symbol) candidate).getArrow();
-          if (listener.get() != null) {
-            listener.get().onCandidateSymbolPressed(arrow);
-          }
-        }
-      }
+//            }
+//          }
+//        }
+//        if (candidate instanceof ComputedCandidate.Symbol) {
+//          String arrow = ((ComputedCandidate.Symbol) candidate).getArrow();
+//          if (listener.get() != null) {
+//            listener.get().onCandidateSymbolPressed(arrow);
+//          }
+//        }
+//      }
     }
   }
 
@@ -206,17 +206,17 @@ public class Candidate extends View {
     return candidateUseCursor && i == highlightIndex;
   }
 
-  public int getHighlightLeft() {
-    if (highlightIndex < computedCandidates.size() && highlightIndex >= 0)
-      return computedCandidates.get(highlightIndex).getGeometry().left;
-    return 0;
-  }
-
-  public int getHighlightRight() {
-    if (highlightIndex < computedCandidates.size() && highlightIndex >= 0)
-      return computedCandidates.get(highlightIndex).getGeometry().right;
-    return 0;
-  }
+//  public int getHighlightLeft() {
+//    if (highlightIndex < computedCandidates.size() && highlightIndex >= 0)
+//      return computedCandidates.get(highlightIndex).getGeometry().left;
+//    return 0;
+//  }
+//
+//  public int getHighlightRight() {
+//    if (highlightIndex < computedCandidates.size() && highlightIndex >= 0)
+//      return computedCandidates.get(highlightIndex).getGeometry().right;
+//    return 0;
+//  }
 
   @Override
   protected void onDraw(Canvas canvas) {
@@ -283,18 +283,19 @@ public class Candidate extends View {
   }
 
   private void updateCandidateWidth() {
-    boolean hasExButton = false;
-    Integer pageEx =
-        Integer.parseInt(AppPrefs.defaultInstance().getKeyboard().getCandidatePageSize()) - 10000;
+//    boolean hasExButton = false;
+//    Integer pageEx =
+//        Integer.parseInt(AppPrefs.defaultInstance().getKeyboard().getCandidatePageSize()) - 10000;
     int pageBottonWidth =
         (int)
             (candidateSpacing
-                + graphicUtils.measureText(symbolPaint, PAGE_DOWN_BUTTON, symbolFont)
+//                + graphicUtils.measureText(symbolPaint, PAGE_DOWN_BUTTON, symbolFont)
                 + 2 * candidatePadding);
     int minWidth;
-    if (pageEx > 2) minWidth = (int) (expectWidth * (pageEx / 10f + 1) - pageBottonWidth);
-    else if (pageEx == 2) minWidth = (expectWidth - pageBottonWidth * 2);
-    else minWidth = expectWidth - pageBottonWidth;
+//    if (pageEx > 2) minWidth = (int) (expectWidth * (pageEx / 10f + 1) - pageBottonWidth);
+//    else if (pageEx == 2) minWidth = (expectWidth - pageBottonWidth * 2);
+//    else
+      minWidth = expectWidth - pageBottonWidth;
 
     computedCandidates.clear();
     updateCandidates();
@@ -302,17 +303,17 @@ public class Candidate extends View {
     for (int i = 0; i < numCandidates; i++) {
       int n = i + startNum;
 
-      if (pageEx >= 0) {
-        if (x >= minWidth) {
-          computedCandidates.add(
-              new ComputedCandidate.Symbol(
-                  PAGE_EX_BUTTON,
-                  new Rect(x, 0, ((int) x + pageBottonWidth), getMeasuredHeight())));
-          x += pageBottonWidth;
-          hasExButton = true;
-          break;
-        }
-      }
+//      if (pageEx >= 0) {
+//        if (x >= minWidth) {
+//          computedCandidates.add(
+//              new ComputedCandidate.Symbol(
+//                  PAGE_EX_BUTTON,
+//                  new Rect(x, 0, ((int) x + pageBottonWidth), getMeasuredHeight())));
+//          x += pageBottonWidth;
+//          hasExButton = true;
+//          break;
+//        }
+//      }
       String comment = null, text = candidates[n].text;
       float candidateWidth =
           graphicUtils.measureText(candidatePaint, text, candidateFont) + 2 * candidatePadding;
@@ -329,31 +330,32 @@ public class Candidate extends View {
       }
 
       // 自动填满候选栏，并保障展开候选按钮显示出来
-      if (pageEx == 0 && x + candidateWidth + candidateSpacing > minWidth) {
-        computedCandidates.add(
-            new ComputedCandidate.Symbol(
-                PAGE_EX_BUTTON, new Rect(x, 0, ((int) x + pageBottonWidth), getMeasuredHeight())));
-        x += pageBottonWidth;
-        hasExButton = true;
-        break;
-      }
+//      if (pageEx == 0 && x + candidateWidth + candidateSpacing > minWidth) {
+//        computedCandidates.add(
+//            new ComputedCandidate.Symbol(
+//                PAGE_EX_BUTTON, new Rect(x, 0, ((int) x + pageBottonWidth), getMeasuredHeight())));
+//        x += pageBottonWidth;
+//        hasExButton = true;
+//        break;
+//      }
+
 
       computedCandidates.add(
           new ComputedCandidate.Word(
               text, comment, new Rect(x, 0, (int) (x + candidateWidth), getMeasuredHeight())));
       x += candidateWidth + candidateSpacing;
     }
-    if (Rime.hasLeft()) {
-      computedCandidates.add(
-          new ComputedCandidate.Symbol(
-              PAGE_UP_BUTTON, new Rect(0, 0, pageBottonWidth, getMeasuredHeight())));
-    }
-    if (Rime.hasRight()) {
-      computedCandidates.add(
-          new ComputedCandidate.Symbol(
-              PAGE_DOWN_BUTTON, new Rect(x, 0, ((int) x + pageBottonWidth), getMeasuredHeight())));
-      x += pageBottonWidth;
-    }
+//    if (Rime.hasLeft()) {
+//      computedCandidates.add(
+//          new ComputedCandidate.Symbol(
+//              PAGE_UP_BUTTON, new Rect(0, 0, pageBottonWidth, getMeasuredHeight())));
+//    }
+//    if (Rime.hasRight()) {
+//      computedCandidates.add(
+//          new ComputedCandidate.Symbol(
+//              PAGE_DOWN_BUTTON, new Rect(x, 0, ((int) x + pageBottonWidth), getMeasuredHeight())));
+//      x += pageBottonWidth;
+//    }
 
     LayoutParams params = getLayoutParams();
     params.width = x;
@@ -363,7 +365,7 @@ public class Candidate extends View {
             : candidateViewHeight;
     setLayoutParams(params);
 
-    Trime.getService().setCandidateExPage(hasExButton);
+//    Trime.getService().setCandidateExPage(hasExButton);
   }
 
   @Override

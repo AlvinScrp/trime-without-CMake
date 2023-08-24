@@ -1,6 +1,5 @@
 package com.osfans.trime.ime.enums
 
-import com.jk.ime.JLog
 
 /** 按键事件枚举  */
 enum class KeyEventType(val lower: String = "") {

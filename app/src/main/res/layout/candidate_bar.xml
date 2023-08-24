@@ -27,6 +27,7 @@
     <com.osfans.trime.ime.text.ScrollView
         android:id="@+id/candidate_root"
         android:layout_width="0dp"
+        android:scrollbars="none"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:fillViewport="true">

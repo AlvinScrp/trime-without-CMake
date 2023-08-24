@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.osfans.trime.data.AppPrefs;
 import com.osfans.trime.data.DataManager;
-import com.osfans.trime.data.opencc.OpenCCDictManager;
 import com.osfans.trime.ime.core.Trime;
 import java.io.BufferedReader;
 import java.io.CharArrayWriter;
@@ -266,11 +265,13 @@ public class Rime {
   }
 
   public static boolean hasLeft() {
-    return hasMenu() && mContext.menu.page_no != 0;
+    return false;
+//    return hasMenu() && mContext.menu.page_no != 0;
   }
 
   public static boolean hasRight() {
-    return hasMenu() && !mContext.menu.is_last_page;
+    return  false;
+//    return hasMenu() && !mContext.menu.is_last_page;
   }
 
   public static boolean isPaging() {
@@ -348,6 +349,8 @@ public class Rime {
     }
     Timber.d(methodName + "initSchema");
     initSchema();
+
+//    Rime.applySchemaChange();
 
     Timber.d(methodName + "finish");
   }
@@ -482,14 +485,14 @@ public class Rime {
     mSchema.toggleOption(i);
   }
 
-  public static void setProperty(String prop, String value) {
-    if (mOnMessage) return;
-    set_property(prop, value);
-  }
-
-  public static String getProperty(String prop) {
-    return get_property(prop);
-  }
+//  public static void setProperty(String prop, String value) {
+//    if (mOnMessage) return;
+//    set_property(prop, value);
+//  }
+//
+//  public static String getProperty(String prop) {
+//    return get_property(prop);
+//  }
 
   public static String getSchemaId() {
     return get_current_schema();
@@ -503,114 +506,102 @@ public class Rime {
     return isEmpty(getSchemaId());
   }
 
-  public static String[] getSchemaNames() {
-    int n = mSchemaList.size();
-    String[] names = new String[n];
-    int i = 0;
-    for (Object o : mSchemaList) {
-      Map<?, ?> m = (Map<?, ?>) o;
-      names[i++] = (String) m.get("name");
-    }
-    return names;
-  }
+//  public static String[] getSchemaNames() {
+//    int n = mSchemaList.size();
+//    String[] names = new String[n];
+//    int i = 0;
+//    for (Object o : mSchemaList) {
+//      Map<?, ?> m = (Map<?, ?>) o;
+//      names[i++] = (String) m.get("name");
+//    }
+//    return names;
+//  }
 
-  public static int getSchemaIndex() {
-    String schema_id = getSchemaId();
-    int i = 0;
-    for (Object o : mSchemaList) {
-      Map<?, ?> m = (Map<?, ?>) o;
-      if (m.get("schema_id").toString().contentEquals(schema_id)) return i;
-      i++;
-    }
-    return 0;
-  }
+//  public static int getSchemaIndex() {
+//    String schema_id = getSchemaId();
+//    int i = 0;
+//    for (Object o : mSchemaList) {
+//      Map<?, ?> m = (Map<?, ?>) o;
+//      if (m.get("schema_id").toString().contentEquals(schema_id)) return i;
+//      i++;
+//    }
+//    return 0;
+//  }
 
   public static String getSchemaName() {
     return mStatus.schema_name;
   }
 
-  private static boolean selectSchema(String schema_id) {
-    Timber.d("selectSchema() schema_id=" + schema_id);
-    overWriteSchema(schema_id);
-    boolean b = select_schema(schema_id);
-    getContexts();
-    return b;
-  }
+//  private static boolean selectSchema(String schema_id) {
+//    Timber.d("selectSchema() schema_id=" + schema_id);
+//    overWriteSchema(schema_id);
+//    boolean b = select_schema(schema_id);
+//    getContexts();
+//    return b;
+//  }
 
   // 刷新当前输入方案
-  public static void applySchemaChange() {
-    String schema_id = getSchemaId();
-    // 实测直接select_schema(schema_id)方案没有重新载入，切换到不存在的方案，再切回去（会产生1秒的额外耗时）.需要找到更好的方法
-    // 不发生覆盖则不生效
-    if (overWriteSchema(schema_id)) {
-      select_schema("nill");
-      select_schema(schema_id);
-    }
-    getContexts();
-  }
+//  public static void applySchemaChange() {
+//    String schema_id = getSchemaId();
+//    // 实测直接select_schema(schema_id)方案没有重新载入，切换到不存在的方案，再切回去（会产生1秒的额外耗时）.需要找到更好的方法
+//    // 不发生覆盖则不生效
+//    if (overWriteSchema(schema_id)) {
+//      select_schema("nill");
+//      select_schema(schema_id);
+//    }
+//    getContexts();
+//  }
   // 临时修改scheme文件参数
   // 临时修改build后的scheme可以避免build过程的耗时
   // 另外实际上jni读入yaml、修改、导出的效率并不高
-  private static boolean overWriteSchema(String schema_id) {
-    Map<String, String> map = new HashMap<>();
-    String page_size = AppPrefs.defaultInstance().getKeyboard().getCandidatePageSize();
-    Timber.d("overWriteSchema() page_size=" + page_size);
-    if (!page_size.equals("0")) {
-      map.put("page_size", page_size);
-    }
-    if (map.isEmpty()) return false;
-    return overWriteSchema(schema_id, map);
-  }
+//  private static boolean overWriteSchema(String schema_id) {
+//    Map<String, String> map = new HashMap<>();
+//    String page_size = AppPrefs.defaultInstance().getKeyboard().getCandidatePageSize();
+//    Timber.d("overWriteSchema() page_size=" + page_size);
+//    if (!page_size.equals("0")) {
+//      map.put("page_size", page_size);
+//    }
+//    if (map.isEmpty()) return false;
+//    return overWriteSchema(schema_id, map);
+//  }
 
-  private static boolean overWriteSchema(String schema_id, Map<String, String> map) {
-    if (schema_id == null) schema_id = getSchemaId();
-    File file =
-        new File(Rime.get_user_data_dir() + File.separator + "build", schema_id + ".schema.yaml");
-    try {
-      FileReader in = new FileReader(file);
-      BufferedReader bufIn = new BufferedReader(in);
-      CharArrayWriter tempStream = new CharArrayWriter();
-      String line = null;
-      read:
-      while ((line = bufIn.readLine()) != null) {
-        for (String k : map.keySet()) {
-          String key = k + ": ";
-          if (line.contains(key)) {
-            String value = ": " + map.get(k) + System.getProperty("line.separator");
-            tempStream.write(line.replaceFirst(":.+", value));
-            map.remove(k);
-            continue read;
-          }
-        }
-        tempStream.write(line);
-        tempStream.append(System.getProperty("line.separator"));
-      }
-      bufIn.close();
-      FileWriter out = new FileWriter(file);
-      tempStream.writeTo(out);
-      out.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
-    }
-    return map.isEmpty();
-  }
+//  private static boolean overWriteSchema(String schema_id, Map<String, String> map) {
+//    if (schema_id == null) schema_id = getSchemaId();
+//    File file =
+//        new File(Rime.get_user_data_dir() + File.separator + "build", schema_id + ".schema.yaml");
+//    try {
+//      FileReader in = new FileReader(file);
+//      BufferedReader bufIn = new BufferedReader(in);
+//      CharArrayWriter tempStream = new CharArrayWriter();
+//      String line = null;
+//      read:
+//      while ((line = bufIn.readLine()) != null) {
+//        for (String k : map.keySet()) {
+//          String key = k + ": ";
+//          if (line.contains(key)) {
+//            String value = ": " + map.get(k) + System.getProperty("line.separator");
+//            tempStream.write(line.replaceFirst(":.+", value));
+//            map.remove(k);
+//            continue read;
+//          }
+//        }
+//        tempStream.write(line);
+//        tempStream.append(System.getProperty("line.separator"));
+//      }
+//      bufIn.close();
+//      FileWriter out = new FileWriter(file);
+//      tempStream.writeTo(out);
+//      out.close();
+//    } catch (IOException e) {
+//      e.printStackTrace();
+//      return false;
+//    }
+//    return map.isEmpty();
+//  }
 
-  public static boolean selectSchema(int id) {
-    int n = mSchemaList.size();
-    if (id < 0 || id >= n) return false;
-    final String schema_id = getSchemaId();
-    Map<String, String> m = (Map<String, String>) mSchemaList.get(id);
-    final String target = m.get("schema_id");
-    if (target.contentEquals(schema_id)) return false;
-    return selectSchema(target);
-  }
 
   public static Rime get(Context context, boolean full_check) {
     if (self == null) {
-      if (full_check) {
-        OpenCCDictManager.internalDeploy();
-      }
       self = new Rime(context, full_check);
     }
     return self;
@@ -625,9 +616,6 @@ public class Rime {
     return s == null ? "" : s;
   }
 
-  public static int RimeGetCaretPos() {
-    return get_caret_pos();
-  }
 
   public static void RimeSetCaretPos(int caret_pos) {
     set_caret_pos(caret_pos);
@@ -655,13 +643,7 @@ public class Rime {
     mOnMessage = false;
   }
 
-  public static String openccConvert(String line, String name) {
-    if (!TextUtils.isEmpty(name)) {
-      final File f = new File(DataManager.getDataDir("opencc"), name);
-      if (f.exists()) return opencc_convert(line, f.getAbsolutePath());
-    }
-    return line;
-  }
+
 
   public static void check(boolean full_check) {
     if (start_maintenance(full_check) && is_maintenance_mode()) {
@@ -669,12 +651,6 @@ public class Rime {
     }
   }
 
-  public static boolean syncUserData(Context context) {
-    boolean b = sync_user_data();
-    destroy();
-    get(context, true);
-    return b;
-  }
 
   // init
   public static native void setup(String shared_data_dir, String user_data_dir);

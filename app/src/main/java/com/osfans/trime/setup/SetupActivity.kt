@@ -73,6 +73,9 @@ class SetupActivity : FragmentActivity() {
             }
         })
         viewModel.isAllDone.observe(this) { allDone ->
+            if (allDone && viewPager.currentItem.isLastPage()) {
+                viewPager.postDelayed({ finish()}, 200)
+            }
             nextButton.apply {
                 // Hide next button for the last page when allDone == false
                 (allDone || !viewPager.currentItem.isLastPage()).let {
@@ -94,7 +97,8 @@ class SetupActivity : FragmentActivity() {
     override fun onPause() {
         if (SetupPage.hasUndonePage()) {
             NotificationUtils.notify(NOTIFY_ID) { param ->
-                param.setSmallIcon(R.drawable.ic_trime_status)
+                param
+                    .setSmallIcon(R.mipmap.ic_app_icon)
                     .setContentTitle(getText(R.string.trime_app_name))
                     .setContentText(getText(R.string.setup__notify_hint))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)

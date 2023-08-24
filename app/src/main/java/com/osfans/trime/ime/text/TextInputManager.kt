@@ -11,10 +11,8 @@ import com.osfans.trime.data.Config
 import com.osfans.trime.databinding.InputRootBinding
 import com.osfans.trime.ime.broadcast.IntentReceiver
 import com.osfans.trime.ime.core.EditorInstance
-import com.osfans.trime.ime.core.Speech
 import com.osfans.trime.ime.core.Trime
 import com.osfans.trime.ime.enums.Keycode
-import com.osfans.trime.ime.enums.SymbolKeyboardType
 import com.osfans.trime.ime.keyboard.Event
 import com.osfans.trime.ime.keyboard.Keyboard.printModifierKeyState
 import com.osfans.trime.ime.keyboard.KeyboardSwitcher
@@ -23,7 +21,6 @@ import com.osfans.trime.util.ShortcutUtils
 import com.osfans.trime.util.startsWithAsciiChar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.cancel
 import timber.log.Timber
 import java.util.Locale
@@ -144,11 +141,12 @@ class TextInputManager private constructor() :
         }
         // Initialize candidate bar
         candidateRoot = uiBinding.main.candidateView.candidateRoot.also {
-            it.setPageStr(
-                Runnable { trime.handleKey(KeyEvent.KEYCODE_PAGE_DOWN, 0) },
-                Runnable { trime.handleKey(KeyEvent.KEYCODE_PAGE_UP, 0) },
-                Runnable { trime.selectLiquidKeyboard(SymbolKeyboardType.CANDIDATE) }
-            )
+//            it.setPageStr(
+//                Runnable { trime.handleKey(KeyEvent.KEYCODE_PAGE_DOWN, 0) },
+//                Runnable { trime.handleKey(KeyEvent.KEYCODE_PAGE_UP, 0) },
+//                Runnable {  }
+////                Runnable { trime.selectLiquidKeyboard(SymbolKeyboardType.CANDIDATE) }
+//            )
             it.visibility = if (Rime.getOption("_hide_candidate")) View.GONE else View.VISIBLE
         }
 
@@ -180,7 +178,7 @@ class TextInputManager private constructor() :
 
     override fun onStartInputView(instance: EditorInstance, restarting: Boolean) {
         super.onStartInputView(instance, restarting)
-        Trime.getService().selectLiquidKeyboard(-1)
+//        Trime.getService().selectLiquidKeyboard(-1)
         isComposable = false
         performEnterAsLineBreak = false
         var tempAsciiMode = if (shouldResetAsciiMode) false else null
@@ -259,7 +257,7 @@ class TextInputManager private constructor() :
                 candidateRoot?.visibility = if (!value) View.VISIBLE else View.GONE
                 trime.setCandidatesViewShown(isComposable && !value)
             }
-            "_liquid_keyboard" -> trime.selectLiquidKeyboard(0)
+//            "_liquid_keyboard" -> trime.selectLiquidKeyboard(0)
             "_hide_key_hint" -> if (mainKeyboardView != null) mainKeyboardView!!.setShowHint(!value)
             "_hide_key_symbol" -> if (mainKeyboardView != null) mainKeyboardView!!.setShowSymbol(!value)
             else -> if (option.startsWith("_keyboard_") &&
@@ -361,9 +359,10 @@ class TextInputManager private constructor() :
                     activeEditorInstance.getTextBeforeCursor(1),
                     activeEditorInstance.getTextBeforeCursor(1024)
                 )
-                if (event.command == "liquid_keyboard") {
-                    trime.selectLiquidKeyboard(arg)
-                } else if (event.command == "paste_by_char") {
+//                if (event.command == "liquid_keyboard") {
+////                    trime.selectLiquidKeyboard(arg)
+//                } else
+                    if (event.command == "paste_by_char") {
                     trime.pasteByChar()
                 } else {
                     val textFromCommand = ShortcutUtils
@@ -374,18 +373,18 @@ class TextInputManager private constructor() :
                     }
                 }
             }
-            KeyEvent.KEYCODE_VOICE_ASSIST -> Speech(trime).startListening() // Speech Recognition
-            KeyEvent.KEYCODE_SETTINGS -> { // Settings
-                when (event.option) {
-                    "theme" -> trime.showThemeDialog()
-                    "color" -> trime.showColorDialog()
-                    "schema" -> trime.showSchemaDialog()
-                    "sound" -> trime.showSoundDialog()
-                    else -> trime.launchSettings()
-                }
-            }
-            KeyEvent.KEYCODE_PROG_RED -> trime.showColorDialog() // Color schemes
-            KeyEvent.KEYCODE_MENU -> trime.showOptionsDialog()
+//            KeyEvent.KEYCODE_VOICE_ASSIST -> Speech(trime).startListening() // Speech Recognition
+//            KeyEvent.KEYCODE_SETTINGS -> { // Settings
+//                when (event.option) {
+//                    "theme" -> trime.showThemeDialog()
+//                    "color" -> trime.showColorDialog()
+//                    "schema" -> trime.showSchemaDialog()
+//                    "sound" -> trime.showSoundDialog()
+//                    else -> trime.launchSettings()
+//                }
+//            }
+//            KeyEvent.KEYCODE_PROG_RED -> trime.showColorDialog() // Color schemes
+//            KeyEvent.KEYCODE_MENU -> trime.showOptionsDialog()
             else -> onKey(event.code, event.mask or trime.keyboardSwitcher.currentKeyboard.modifer)
         }
     }
@@ -462,16 +461,16 @@ class TextInputManager private constructor() :
         }
     }
 
-    override fun onCandidateSymbolPressed(arrow: String) {
-        when (arrow) {
-            Candidate.PAGE_UP_BUTTON -> onKey(KeyEvent.KEYCODE_PAGE_UP, 0)
-            Candidate.PAGE_DOWN_BUTTON -> onKey(KeyEvent.KEYCODE_PAGE_DOWN, 0)
-            Candidate.PAGE_EX_BUTTON -> Trime.getService().selectLiquidKeyboard(SymbolKeyboardType.CANDIDATE)
-        }
-    }
+//    override fun onCandidateSymbolPressed(arrow: String) {
+//        when (arrow) {
+//            Candidate.PAGE_UP_BUTTON -> onKey(KeyEvent.KEYCODE_PAGE_UP, 0)
+//            Candidate.PAGE_DOWN_BUTTON -> onKey(KeyEvent.KEYCODE_PAGE_DOWN, 0)
+////            Candidate.PAGE_EX_BUTTON -> Trime.getService().selectLiquidKeyboard(SymbolKeyboardType.CANDIDATE)
+//        }
+//    }
 
-    override fun onCandidateLongClicked(index: Int) {
-        Rime.deleteCandidate(index)
-        trime.updateComposing()
-    }
+//    override fun onCandidateLongClicked(index: Int) {
+//        Rime.deleteCandidate(index)
+//        trime.updateComposing()
+//    }
 }

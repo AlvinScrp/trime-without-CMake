@@ -2,10 +2,10 @@ __build_info:
   rime_version: 1.7.3
   timestamps:
     clover.custom: 0
-    clover.schema: 1692791548
-    default: 1692791548
-    default.custom: 1692791548
-    symbols: 1692791548
+    clover.schema: 1692863977
+    default: 1692863977
+    default.custom: 1692863977
+    symbols: 1692863977
     symbols.custom: 0
 custom_phrase:
   db_class: stabledb
@@ -80,7 +80,7 @@ key_binder:
     - {accept: "Control+period", toggle: ascii_punct, when: always}
   import_preset: default
 menu:
-  page_size: 6
+  page_size: 30
 punctuator:
   full_shape:
     " ": {commit: "　"}

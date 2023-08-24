@@ -44,7 +44,7 @@ key_binder:
     - {accept: "Shift+space", toggle: full_shape, when: always}
     - {accept: "Control+period", toggle: ascii_punct, when: always}
 menu:
-  page_size: 6
+  page_size: 30
 punctuator:
   full_shape:
     " ": {commit: "　"}

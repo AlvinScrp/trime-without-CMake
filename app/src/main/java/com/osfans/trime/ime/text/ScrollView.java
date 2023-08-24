@@ -21,17 +21,17 @@ public class ScrollView extends HorizontalScrollView {
   private boolean isMoving = false;
   private int left;
 
-  private Runnable pageDownAction, pageUpAction, pageExAction;
+//  private Runnable pageDownAction, pageUpAction, pageExAction;
 
   public ScrollView(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
 
-  public void setPageStr(Runnable pageDownAction, Runnable pageUpAction, Runnable pageExAction) {
-    this.pageDownAction = pageDownAction;
-    this.pageUpAction = pageUpAction;
-    this.pageExAction = pageExAction;
-  }
+//  public void setPageStr(Runnable pageDownAction, Runnable pageUpAction, Runnable pageExAction) {
+//    this.pageDownAction = pageDownAction;
+//    this.pageUpAction = pageUpAction;
+//    this.pageExAction = pageExAction;
+//  }
 
   /**
    * Based on the XML generated view work done. The function in the creation of the view of the last
@@ -106,11 +106,11 @@ public class ScrollView extends HorizontalScrollView {
         }
 
         // TODO: 翻页后、手指抬起前，降低滑动速度增加阻尼感
-        if (inner.getLeft() > swipeActionLimit && Rime.hasLeft()) {
-          if (pageUpAction != null) pageUpAction.run();
-          if (inner.getWidth() > this.getWidth())
-            scrollTo(this.getWidth() - inner.getWidth() + 400, 0);
-        } else {
+//        if (inner.getLeft() > swipeActionLimit && Rime.hasLeft()) {
+//          if (pageUpAction != null) pageUpAction.run();
+//          if (inner.getWidth() > this.getWidth())
+//            scrollTo(this.getWidth() - inner.getWidth() + 400, 0);
+//        } else {
           //          Timber.d("commOnTouchEvent "+getWidth() + "-" + inner.getWidth() +"+" +
           // getScrollX()+", p=" +scrollEndPosition+", x="+ev.getX());
           Timber.d(
@@ -121,22 +121,7 @@ public class ScrollView extends HorizontalScrollView {
               swipeStartX = ev.getX();
             }
           } else if (swipeStartX - ev.getX() > swipeActionLimit) {
-            if (Trime.getService().hasCandidateExPage()) {
-              if (pageExAction != null) pageExAction.run();
-              return;
-            } else if (Rime.hasRight()) {
-              if (pageDownAction != null) pageDownAction.run();
-              swipeStartX = -1;
-              if (inner.getWidth() > this.getWidth()) {
-                scrollTo(-swipeActionLimit, 0);
-                inner.layout(
-                    inner.getRight(),
-                    inner.getTop(),
-                    inner.getRight() + inner.getWidth(),
-                    inner.getBottom());
-              }
-              return;
-            }
+
           }
 
           // When the scroll to the top or the most when it will not scroll, then move the layout.
@@ -161,7 +146,7 @@ public class ScrollView extends HorizontalScrollView {
 
           isCount = true;
           x = nowX;
-        }
+//        }
         break;
       default:
         break;
