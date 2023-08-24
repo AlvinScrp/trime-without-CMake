@@ -395,7 +395,7 @@ public class Candidate extends View {
         long durationMs = timeMove - timeDown;
         setPressed(false);
         if (me.getActionMasked() == MotionEvent.ACTION_UP) {
-          onCandidateClick(highlightIndex, durationMs >= Config.getDeleteCandidateTimeout());
+          onCandidateClick(highlightIndex, false);
         }
         highlightIndex = -1;
         invalidate();

@@ -359,9 +359,6 @@ class TextInputManager private constructor() :
                     activeEditorInstance.getTextBeforeCursor(1),
                     activeEditorInstance.getTextBeforeCursor(1024)
                 )
-//                if (event.command == "liquid_keyboard") {
-////                    trime.selectLiquidKeyboard(arg)
-//                } else
                     if (event.command == "paste_by_char") {
                     trime.pasteByChar()
                 } else {
@@ -373,18 +370,6 @@ class TextInputManager private constructor() :
                     }
                 }
             }
-//            KeyEvent.KEYCODE_VOICE_ASSIST -> Speech(trime).startListening() // Speech Recognition
-//            KeyEvent.KEYCODE_SETTINGS -> { // Settings
-//                when (event.option) {
-//                    "theme" -> trime.showThemeDialog()
-//                    "color" -> trime.showColorDialog()
-//                    "schema" -> trime.showSchemaDialog()
-//                    "sound" -> trime.showSoundDialog()
-//                    else -> trime.launchSettings()
-//                }
-//            }
-//            KeyEvent.KEYCODE_PROG_RED -> trime.showColorDialog() // Color schemes
-//            KeyEvent.KEYCODE_MENU -> trime.showOptionsDialog()
             else -> onKey(event.code, event.mask or trime.keyboardSwitcher.currentKeyboard.modifer)
         }
     }
@@ -460,17 +445,4 @@ class TextInputManager private constructor() :
             trime.handleKey(KeyEvent.KEYCODE_1 + index, 0)
         }
     }
-
-//    override fun onCandidateSymbolPressed(arrow: String) {
-//        when (arrow) {
-//            Candidate.PAGE_UP_BUTTON -> onKey(KeyEvent.KEYCODE_PAGE_UP, 0)
-//            Candidate.PAGE_DOWN_BUTTON -> onKey(KeyEvent.KEYCODE_PAGE_DOWN, 0)
-////            Candidate.PAGE_EX_BUTTON -> Trime.getService().selectLiquidKeyboard(SymbolKeyboardType.CANDIDATE)
-//        }
-//    }
-
-//    override fun onCandidateLongClicked(index: Int) {
-//        Rime.deleteCandidate(index)
-//        trime.updateComposing()
-//    }
 }

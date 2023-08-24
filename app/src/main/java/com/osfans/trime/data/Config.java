@@ -37,13 +37,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.osfans.trime.core.Rime;
-import com.osfans.trime.ime.enums.PositionType;
 import com.osfans.trime.ime.keyboard.Key;
 import com.osfans.trime.util.ConfigGetter;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -812,10 +810,6 @@ public class Config {
         return drawableObject(o);
     }
 
-    public PositionType getWinPos() {
-        return PositionType.Companion.fromString(getString("layout/position"));
-    }
-
     public int getLongTimeout() {
         int progress = appPrefs.getKeyboard().getLongPressTimeout();
         if (progress > 60) progress = 60;
@@ -828,32 +822,6 @@ public class Config {
         return progress * 10 + 10;
     }
 
-    public static int getDeleteCandidateTimeout() {
-        return appPrefs.getKeyboard().getDeleteCandidateTimeout();
-    }
-
-    public static boolean getShouldLongClickDeleteCandidate() {
-        return appPrefs.getKeyboard().getShouldLongClickDeleteCandidate();
-    }
-
-    public int getLiquidPixel(String key) {
-        if (liquidKeyboard != null) {
-            if (liquidKeyboard.containsKey(key)) {
-                return ConfigGetter.getPixel(liquidKeyboard, key, 0);
-            }
-        }
-        return getPixel(key);
-    }
-
-    public Integer getLiquidColor(String key) {
-        if (liquidKeyboard != null) {
-            if (liquidKeyboard.containsKey(key)) {
-                Integer value = parseColor(liquidKeyboard.get(key));
-                if (value != null) return value;
-            }
-        }
-        return getColor(key);
-    }
 
     // 获取当前色彩 Config 2.0
     public Integer getCurrentColor_(String key) {

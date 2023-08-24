@@ -21,17 +21,10 @@ public class ScrollView extends HorizontalScrollView {
   private boolean isMoving = false;
   private int left;
 
-//  private Runnable pageDownAction, pageUpAction, pageExAction;
-
   public ScrollView(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
 
-//  public void setPageStr(Runnable pageDownAction, Runnable pageUpAction, Runnable pageExAction) {
-//    this.pageDownAction = pageDownAction;
-//    this.pageUpAction = pageUpAction;
-//    this.pageExAction = pageExAction;
-//  }
 
   /**
    * Based on the XML generated view work done. The function in the creation of the view of the last
