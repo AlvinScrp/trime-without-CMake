@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+    <!-- 输入法平台名称  -->
+    <string name="trime_app_name">好衣库输入法</string>
+    <string name="pref_enable">启用</string>
+    <string name="deploy_progress">正在部署…</string>
+    <string name="deploy_finish">部署完成</string>
+    <string name="trime_app_slogan">中文（简体）</string>
+    <string name="external_storage_access_required">输入法需要存储权限以部署或读取方案和配置，点击“确定”前往授权。</string>
+    <string name="external_storage_permission_not_available">存储权限不可用</string>
+    <string name="external_storage_permission_granted">已授予存储权限</string>
+    <string name="external_storage_permission_denied">已拒绝授权存储权限，部署或读取方案和配置功能或不可用</string>
+    <string name="setup__next">下一步</string>
+    <string name="setup__done">完成</string>
+    <string name="setup__enable_ime_hint">在语言和输入设置中启用<b>输入法</b></string>
+    <string name="setup__select_ime_hint">选择<b>输入法</b>作为默认输入法</string>
+    <string name="setup__enable_ime">启用输入法</string>
+    <string name="setup__select_ime">选择输入法</string>
+    <string name="setup__prev">上一步</string>
+    <string name="setup__channel_hint">输入法设置向导</string>
+    <string name="setup__notify_hint">请完成键盘设置</string>
+    <string name="setup__step_one">第 1 步</string>
+    <string name="setup__step_two">第 2 步</string>
+    <string name="setup__skip">跳过</string>
+    <string name="setup__skip_hint">您确定要跳过向导吗？</string>
+    <string name="setup__skip_hint_yes">好的，谢谢</string>
+    <string name="setup__skip_hint_no">不，我想留在这儿</string>
+</resources>
