@@ -1293,7 +1293,7 @@ public class KeyboardView extends View implements View.OnClickListener, Coroutin
     if (mCurrentKey < 0 || mCurrentKey >= mKeys.length) {
       return false;
     }
-    showPreview(NOT_A_KEY);
+//    showPreview(NOT_A_KEY);
     showPreview(mCurrentKey, KeyEventType.LONG_CLICK.ordinal());
     Key popupKey = mKeys[mCurrentKey];
     boolean result = onLongPress(popupKey);
